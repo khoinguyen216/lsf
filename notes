@@ -1,0 +1,39 @@
+# Preparations
+
+## Environment
+
+Assume current directory is the repository, set the following variables
+```
+    export TOPDIR=/home/nguyen/clipboard/lfs_work
+    export FBD_LFS=$TOPDIR/fbd_lfs
+    export FBD_LOOPDEV=/dev/loop0
+    export LFS_MOUNTDIR=/mnt
+```
+
+## Create a 4-GB partition for the new system
+
+Create a file-backed disk
+```
+    dd if=/dev/zero of=$FBD_LFS bs=1M count=4096
+```
+
+Set up a loopback device from the disk file, create an Ext4 partition on it and finally mount it
+```
+    sudo losetup $FBD_LOOPDEV $FBD_LFS
+    sudo mkfs -v -t ext4 $FBD_LOOPDEV
+    sudo mount -v -t ext4 $FBD_LOOPDEV $LFS_MOUNTDIR
+```
+
+Create a source directory
+```
+    sudo mkdir -p $LFS_MOUNTDIR/sources
+```
+
+## Download source packages
+
+`wget-list` contains the list of all required packages. Download them using `wget`.
+```
+    sudo wget --input-file=wget-list --continue --directory-prefix=$LFS_MOUNTDIR/sources
+```
+
+Additionally, verify the integrity of the downloaded source packages using the file `md5sums`.
